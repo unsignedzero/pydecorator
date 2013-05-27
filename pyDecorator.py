@@ -6,26 +6,25 @@
 # to pause and print the stack
 #
 # Created on 05-27-2013
-# Updated on
+# Updated on 05-27-2013
 # Created by unsignedzero (David Tran)
-# Version 0.5.0.0
+# Version 0.6.0.0
 
 from pprint import pprint
 from sys import version_info
 
 # We don't require the frame support but it helps
 try:
+  # Will work on all CPython builds
   from sys import _getframe
 except ImportError:
+  # All others here...
   from sys import callstats
   _getframe = None
 
-# Set default to be default input
+# Set default to be default input even if in Python 2.X
 if version_info[0] == 2:
   input = raw_input
-
-# We create a global "self" variable to allow users in their code to
-# print the stack
 
 class pyDecorate(object):
   r""" 
@@ -44,12 +43,24 @@ class pyDecorate(object):
       DEBUG            Set True to print out when pyDecorate methods are being
                        called and the recursionCount. 
       VERBOSE          Sets the verbosity level of the class
+
+                       0 - Prints only the function names
+
+                       1 - Mimics the exception handling of Python prints out
+                           function name, file, line number and also arg count
+
+                       2 - Prints all of 1 but also prints out constants and 
+                           locals in the frame
+
+                       3 - Prints all of 2 but also prints out globals and
+                           built in functions with respect to the current
+                           frame
   """
   # Static Counter
   recursionCall = 0
 
   DEBUG = False
-  VERBOSE = 0
+  VERBOSE = 1
 
   def __init__(self, func):
     print( ">>Initializing pyDecorate class" )
@@ -81,6 +92,11 @@ class pyDecorate(object):
         pyDecorate.recursionCall )
 
   def _printCurStack(self):
+    r"""
+    Internal method that sets out the counter before calling the static method
+    of similar name. This relies on the static variable DEBUG to tell it if it
+    should print out its header.
+    """
     self.count += 1
     if pyDecorate.DEBUG:
       print( ">>debugDecorator:Call count to decorator %i" % self.count )
@@ -89,6 +105,16 @@ class pyDecorate(object):
 
   @staticmethod
   def printCurStack():
+    r"""
+    Prints the full current stack of Python as well as additional information
+    as specified by the value of VERBOSE in the same class. This will not
+    print the first two elements on top of the stack, which will contain this
+    method as well as the class frame. This relies on DEBUG to tell it if
+    it should print out its header and trailer.
+
+    See the docstring for the class for further information on VERBOSE.
+    """
+
     i = 2
 
     if pyDecorate.DEBUG:
@@ -96,6 +122,9 @@ class pyDecorate(object):
 
     try:
       if _getframe:
+        # With this loop we continue to trace down the stack until we are 
+        # unable to. In that event, we create a ValueError exception and
+        # thus exit outside the loop
         while True:
           pyDecorate.printCurFrame(i)
           i += 1
@@ -108,6 +137,11 @@ class pyDecorate(object):
       print( "\n\ndebugDecorator:printCurStack finished" )
 
   def _pause(self):
+    r"""
+    Internal method that sets out the counter before calling the static method
+    of similar name. This relies on the static variable DEBUG to tell it if
+    it should print out its header.
+    """
     self.count += 1
 
     if pyDecorate.DEBUG:
@@ -117,6 +151,13 @@ class pyDecorate(object):
 
   @staticmethod
   def pause():
+    r"""
+    Prints only the current frame on the stack before continuing on
+    This implicitly relies on VERBOSE to tell it what to print. This prints
+    the third element on the stack which is the function that calls this.
+
+    See the docstring for the class for further information on VERBOSE.
+    """
 
     if pyDecorate.DEBUG:
       print( ">>debugDecorator:pause called. Printing current Frame...\n" )
@@ -128,15 +169,32 @@ class pyDecorate(object):
     input( "Pausing in pyDecorate. Press any key to continue." )
 
   @staticmethod
-  def printCurFrame(value = 1):
-    frame = _getframe(value)
+  def printCurFrame(frameIndex = 1):
+    r"""
+    Runs and prints the frameIndexth on the stack. This function CAN throw a
+    ValueError when we go down to far. This function does NOT handle the
+    exception so catch it as needed. The reason is if we call this function 
+    many times, then it doesn't have to handle it each time.
+
+    This function relies on the static variable VERBOSE to tell it what 
+    to print out.
+
+    ArgumentsL
+        frameIndex       Tell this method which frame to print out. If not
+                         passed then it will print out the 2nd frame, which,
+                         if this method is explicitly called outside, will
+                         be the correct frameIndex value for the function that
+                         calls this method.
+    """
+    frame = _getframe(frameIndex)
     frameCode = frame.f_code
 
-    print( ">>We are in %s with %i args passed" %
-      (frameCode.co_name, frameCode.co_argcount) ) 
+    print( ">>Function %s" % frameCode.co_name )
     if pyDecorate.VERBOSE >= 1:
-      print( ">>Filename: %s" % frameCode.co_filename )
-      print( ">>Line Number: %i" % frame.f_lineno )
+      print( ">>File \"%s\", line %i, in %s, argcount %i" % (
+          frameCode.co_filename, frame,f_lineno, frameCode.co_name,
+          frameCode.co_argcount)
+        )
 
     if pyDecorate.VERBOSE >= 2:
       print( ">>>Constants set are:" )
@@ -149,16 +207,23 @@ class pyDecorate(object):
         print( ">>>Builtins seen are:" )
         pprint( frame.f_builtins )
 
-@pyDecorate
-def helloArgs(*pargs, **kwargs):
-  print("In helloArgs")
-  print( "pargs has:" )
-  pprint( pargs )
-  print( "kwargs has:" )
-  pprint( kwargs )
-  pyDecorate.pause()
-  print("Closing helloArgs")
+def sampleTest():
+  r"""
+  Sample case to show how to use the decorate the function what one should
+  except as the output
+  """
+  @pyDecorate
+  def helloArgs(*args, **kwargs):
+    print("In helloArgs")
+    print( "args has:" )
+    pprint( args )
+    print( "kwargs has:" )
+    pprint( kwargs )
+    pyDecorate.pause()
+    print("Closing helloArgs")
 
+  helloArgs(1,2,3, abc="123")
 
 if __name__ == '__main__':
-  helloArgs(1, 2, 3, aba="blue")
+  print( "Executing sample code" )
+  sampleTest()
