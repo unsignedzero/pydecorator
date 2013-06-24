@@ -12,6 +12,11 @@ Created by unsignedzero and started on 05-27-2013 as an idea.
 
 # Version/Changelog #
 
+# 0.7.1.0 04-24-2013 #
+* Added small test for return value of helloArgs
+* Added more comments in code
+* Set default verbosity to 0
+
 # 0.7.0.0 05-28-2013 #
 * Return values of function now return correctly
 * SampleTest now an integrated static method

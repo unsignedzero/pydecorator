@@ -61,12 +61,13 @@ class pyDecorator(object):
                            frame
   """
 
-  # Static Counter
+  # Static Counters
   recursionCall = 0
   callID = 0
 
+  # State flags
   DEBUG = False
-  VERBOSITY = 3 # A comment
+  VERBOSITY = 0
 
   def __init__(self, func):
     r"""
@@ -74,6 +75,7 @@ class pyDecorator(object):
     """
 
     print( ">>Initializing pyDecorator class" )
+    
     self.func = func
     self.count = 0
 
@@ -102,7 +104,6 @@ class pyDecorator(object):
 
     if VERBOSITY >= 1:
       print( ">>We are calling %s" % self.func.__name__ )
-
       print( ">>For args we have:" )
       pprint( args )
       print( ">>For kwargs we have:" )
@@ -111,6 +112,7 @@ class pyDecorator(object):
     print( "\n>>Starting call to %s [Call#%03i]\n%s" %
       (self.func.__name__, pyDecorator.callID, LINE_STR) )
 
+    # Remember to capture and return the args of the function called
     ret = self.func(*args, **kwargs)
 
     print( "%s>>Ended call to %s [Call#%03i]. Returned %s" %
@@ -283,7 +285,8 @@ class pyDecorator(object):
     @pyDecorator
     def helloArgs(*args, **kwargs):
       r"""
-      Generic function that takes in all arguments
+      Generic function that takes in all arguments and prints what is passed
+      to it
       """
 
       print("In helloArgs")
@@ -299,9 +302,23 @@ class pyDecorator(object):
 
       return 0
 
-    helloArgs(1,2,3, abc="123")
+    a = helloArgs(1,2,3, abc="123")
+
+    if pyDecorator.DEBUG:
+      if a == 0:
+        print( "Returns from the test function are correct" )
+      else:
+        print( "Returns from the test function are NOT correct" )
 
 if __name__ == '__main__':
-
   print( "Executing sample code" )
+
+  # We can change the internal variables since all variables are "public"
+  # So the verbosity can be changed on the fly 
+  pyDecorator.VERBOSITY = 0
+  pyDecorator.DEBUG = True
+
   pyDecorator.sampleTest()
+
+  print( "Execution completed" )
+
