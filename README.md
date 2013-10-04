@@ -12,6 +12,8 @@ Created by unsignedzero and started on 05-27-2013 as an idea.
 
 # Version/Changelog #
 
+# 0.7.2.0 10-04-2013 #
+* Added setter/getter for static variables
 * Added .gitignore file
 * Removed extra spaces at end of line and updated comments
 

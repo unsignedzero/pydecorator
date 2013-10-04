@@ -41,10 +41,10 @@ class pyDecorator(object):
 
   Attributes:
 
-      DEBUG            Set True to print out when pyDecorator methods are being
+      _DEBUG            Set True to print out when pyDecorator methods are being
                        called and the recursionCount.
 
-      VERBOSITY        Sets the verbosity level of the class
+      _VERBOSITY        Sets the verbosity level of the class
 
                        0 - Prints only the function names
 
@@ -60,16 +60,60 @@ class pyDecorator(object):
                            frame
   """
 
-  # Static Counters
-  recursionLevel = 0    # States how many times this function is repeatedly
-                        # called. Useful when applying this on recursive
-                        # functions
-  callCount = 0         # States the number of times this is called since
-                        # start of execution
+  # Private static counters
+  _recursionLevel = 0    # States how many times this function is repeatedly
+                         # called. Useful when applying this on recursive
+                         # functions
+  _callCount = 0         # States the number of times this is called since
+                         # start of execution
 
-  # State flags in constructor
-  DEBUG = False
-  VERBOSITY = 0
+  # Static state flags in constructor. Use setter/getter methods to change it.
+  _DEBUG = False
+  _VERBOSITY = 0
+
+  ###########################################################################
+
+  @staticmethod
+  def setDEBUG(val):
+    r"""
+    Setter for _DEBUG static variable.
+    """
+
+    if val == False or val == True:
+      pyDecorator._DEBUG = val
+      return True
+    else:
+      return False
+
+  @staticmethod
+  def getDEBUG(val):
+    r"""
+    Getter for _DEBUG static variable.
+    """
+
+    return pyDecorator._DEBUG
+
+  @staticmethod
+  def setVERBOSITY(val):
+    r"""
+    Setter for _VERBOSITY static variable.
+    """
+
+    if isinstance(val, int):
+      pyDecorator._VERBOSITY = val
+      return True
+    else:
+      return False
+
+  @staticmethod
+  def getVERBOSITY(val):
+    r"""
+    Getter for _VERBOSITY static variable.
+    """
+
+    return pyDecorator._VERBOSITY
+
+  ###########################################################################
 
   def __init__(self, func):
     r"""
@@ -85,26 +129,26 @@ class pyDecorator(object):
   def __call__(self, *args, **kwargs):
     r"""
     Manages the call of the function by printing debugging information as
-    defined from pyDecorator.VERBOSITY and pyDecorator.DEBUG
+    defined from pyDecorator._VERBOSITY and pyDecorator._DEBUG
     """
 
-    pyDecorator.recursionLevel += 1
-    pyDecorator.callCount += 1
+    pyDecorator._recursionLevel += 1
+    pyDecorator._callCount += 1
 
     # Caching values so we don't have to go out to the class repeatedly
     # and make it mostly local to the class
-    DEBUG = pyDecorator.DEBUG
-    VERBOSITY = pyDecorator.VERBOSITY
+    _DEBUG = pyDecorator._DEBUG
+    _VERBOSITY = pyDecorator._VERBOSITY
     LINE_STR = ""
 
-    if VERBOSITY >= 1:
+    if _VERBOSITY >= 1:
       LINE_STR = ">>--------------------------------------------------\n"
 
-    if DEBUG:
-      print ( "\n\n>>pyDecorator:pyDecorator.recursionLevel count is %i" %
-        pyDecorator.recursionLevel )
+    if _DEBUG:
+      print ( "\n\n>>pyDecorator:recursionLevel count is %i" %
+        pyDecorator._recursionLevel )
 
-    if VERBOSITY >= 1:
+    if _VERBOSITY >= 1:
       print( ">>We are calling %s" % self.func.__name__ )
       print( ">>For args we have:" )
       pprint( args )
@@ -112,19 +156,19 @@ class pyDecorator(object):
       pprint( kwargs )
 
     print( "\n>>Starting call to %s [Call#%03i]\n%s" %
-      (self.func.__name__, pyDecorator.callCount, LINE_STR) )
+      (self.func.__name__, pyDecorator._callCount, LINE_STR) )
 
     # Remember to capture and return the args of the function called
     ret = self.func(*args, **kwargs)
 
     print( "%s>>Ended call to %s [Call#%03i]. Returned %s" %
-      (LINE_STR, self.func.__name__, pyDecorator.callCount, str(ret) ))
+      (LINE_STR, self.func.__name__, pyDecorator._callCount, str(ret) ))
 
-    pyDecorator.recursionLevel -= 1
+    pyDecorator._recursionLevel -= 1
 
-    if DEBUG:
-      print ( "\n\npyDecorator:pyDecorator.recursionLevel count is %i" %
-        pyDecorator.recursionLevel )
+    if _DEBUG:
+      print ( "\n\npyDecorator:pyDecorator._recursionLevel count is %i" %
+        pyDecorator._recursionLevel )
 
     return ret
 
@@ -132,13 +176,13 @@ class pyDecorator(object):
   def _printCurStack(self):
     r"""
     Internal method that sets out the counter before calling the static method
-    of similar name. This relies on the static variable DEBUG to tell it if it
+    of similar name. This relies on the static variable _DEBUG to tell it if it
     should print out its header.
     """
 
     self.count += 1
 
-    if pyDecorator.DEBUG:
+    if pyDecorator._DEBUG:
       print( ">>pyDecorator:Call count to decorator %i" % self.count )
       pyDecorator.printCurStack()
 
@@ -147,17 +191,18 @@ class pyDecorator(object):
   def printCurStack():
     r"""
     Prints the full current stack of Python as well as additional information
-    as specified by the value of VERBOSITY in the same class. This will not
+    as specified by the value of _VERBOSITY in the same class. This will not
     print the first two elements on top of the stack, which will contain this
-    method as well as the class frame. This relies on DEBUG to tell it if
+    method as well as the class frame. This relies on _DEBUG to tell it if
     it should print out its header and trailer.
 
-    See the docstring for the class for further information on VERBOSITY.
+    See the docstring for the class for further information on _VERBOSITY.
     """
 
+    _DEBUG = pyDecorator._DEBUG
     i = 2
 
-    if pyDecorator.DEBUG:
+    if _DEBUG:
       print( ">>pyDecorator:printCurStack called. Unrolling stack...\n" )
 
     try:
@@ -176,20 +221,20 @@ class pyDecorator(object):
     except ValueError:
       pass
 
-    if pyDecorator.DEBUG:
+    if _DEBUG:
       print( "\n\npyDecorator:printCurStack finished" )
 
 
   def _pause(self):
     r"""
     Internal method that sets out the counter before calling the static method
-    of similar name. This relies on the static variable DEBUG to tell it if
+    of similar name. This relies on the static variable _DEBUG to tell it if
     it should print out its header.
     """
 
     self.count += 1
 
-    if pyDecorator.DEBUG:
+    if pyDecorator._DEBUG:
       print( "\n\n>>pyDecorator:Call count to decorator %i" % self.count )
 
     pyDecorator.pause()
@@ -199,18 +244,19 @@ class pyDecorator(object):
   def pause():
     r"""
     Prints only the current frame on the stack before continuing on
-    This implicitly relies on VERBOSITY to tell it what to print. This prints
+    This implicitly relies on _VERBOSITY to tell it what to print. This prints
     the third element on the stack which is the function that calls this.
 
-    See the docstring for the class for further information on VERBOSITY.
+    See the docstring for the class for further information on _VERBOSITY.
     """
+    _DEBUG = pyDecorator._DEBUG
 
-    if pyDecorator.DEBUG:
+    if _DEBUG:
       print( ">>pyDecorator:pause called. Printing current Frame...\n" )
 
     pyDecorator.printCurFrame(2)
 
-    if pyDecorator.DEBUG:
+    if _DEBUG:
       print( "\n\n>>pyDecorator:pause closing...")
 
     input( "Pausing in pyDecorator. Press any key to continue." )
@@ -224,7 +270,7 @@ class pyDecorator(object):
     exception so catch it as needed. The reason is if we call this function
     many times, then it doesn't have to handle it each time.
 
-    This function relies on the static variable VERBOSITY to tell it what
+    This function relies on the static variable _VERBOSITY to tell it what
     to print out.
 
     Arguments:
@@ -235,22 +281,24 @@ class pyDecorator(object):
                          calls this method.
     """
 
+    _VERBOSITY = pyDecorator._VERBOSITY
+
     frame = _getframe(frameIndex)
     frameCode = frame.f_code
 
     print( ">>Function %s" % frameCode.co_name )
 
-    if pyDecorator.VERBOSITY >= 1:
+    if _VERBOSITY >= 1:
       print( ">>File \"%s\", line %i, in %s, argcount %i" % (
           frameCode.co_filename, frame.f_lineno, frameCode.co_name,
           frameCode.co_argcount)
         )
 
-    if pyDecorator.VERBOSITY >= 2:
+    if _VERBOSITY >= 2:
       print( ">>>Locals in the function are:" )
       pprint( frame.f_locals )
 
-      if pyDecorator.VERBOSITY >= 3:
+      if _VERBOSITY >= 3:
         print( ">>>Constants set are:" )
         pprint(frameCode.co_consts)
 
@@ -306,7 +354,7 @@ class pyDecorator(object):
 
     a = helloArgs(1,2,3, abc="123")
 
-    if pyDecorator.DEBUG:
+    if pyDecorator._DEBUG:
       if a == 0:
         print( "Returns from the test function are correct" )
       else:
@@ -317,8 +365,8 @@ if __name__ == '__main__':
 
   # We can change the internal variables since all variables are "public"
   # So the verbosity can be changed on the fly
-  pyDecorator.VERBOSITY = 0
-  pyDecorator.DEBUG = True
+  pyDecorator.setVERBOSITY(0)
+  pyDecorator.setDEBUG(True)
 
   pyDecorator.sampleTest()
 
