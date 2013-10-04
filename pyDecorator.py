@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# coding: utf-8
 
 # Python pyDecorator class
 # Attaches on to methods to provide tracking on successive function calls
@@ -6,9 +7,9 @@
 # to pause and print the stack
 #
 # Created on 05-27-2013
-# Updated on 05-28-2013
+# Updated on 10-04-2013
 # Created by unsignedzero (David Tran)
-# Version 0.7.0.0
+# Version 0.7.1.0
 
 from pprint import pprint
 from sys import version_info
@@ -22,17 +23,14 @@ except ImportError:
   from sys import callstats
   _getframe = None
 
-# Set default to be default input even if in Python 2.X
-# If default input is used elsewhere, regex the only use of "input"
-# in this function to raw_input and comment the below two lines
+# Set default input to be input even in Python 2.X
 if version_info[0] == 2:
   input = raw_input
 
-
 class pyDecorator(object):
-  r""" 
+  r"""
   This is a debugging decorator class that attaches to a function to
-  print out variables information and well as stack information. The goal is 
+  print out variables information and well as stack information. The goal is
   to make it easier to see the current stack and variables (state). As this
   reads pargs and kwargs, the only values that will change are non-atomic
   values (variables that we access by reference including arrays, and objects,
@@ -44,16 +42,17 @@ class pyDecorator(object):
   Attributes:
 
       DEBUG            Set True to print out when pyDecorator methods are being
-                       called and the recursionCount. 
+                       called and the recursionCount.
+
       VERBOSITY        Sets the verbosity level of the class
 
                        0 - Prints only the function names
 
                        1 - Mimics the exception handling of Python prints out
                            function name, file, line number and also arg count.
-                           In the call, we 
+                           In the call, we
 
-                       2 - Prints all of 1 but also prints out constants and 
+                       2 - Prints all of 1 but also prints out constants and
                            locals in the frame
 
                        3 - Prints all of 2 but also prints out globals and
@@ -62,10 +61,13 @@ class pyDecorator(object):
   """
 
   # Static Counters
-  recursionCall = 0
-  callID = 0
+  recursionLevel = 0    # States how many times this function is repeatedly
+                        # called. Useful when applying this on recursive
+                        # functions
+  callCount = 0         # States the number of times this is called since
+                        # start of execution
 
-  # State flags
+  # State flags in constructor
   DEBUG = False
   VERBOSITY = 0
 
@@ -75,7 +77,7 @@ class pyDecorator(object):
     """
 
     print( ">>Initializing pyDecorator class" )
-    
+
     self.func = func
     self.count = 0
 
@@ -86,8 +88,8 @@ class pyDecorator(object):
     defined from pyDecorator.VERBOSITY and pyDecorator.DEBUG
     """
 
-    pyDecorator.recursionCall += 1
-    pyDecorator.callID += 1 
+    pyDecorator.recursionLevel += 1
+    pyDecorator.callCount += 1
 
     # Caching values so we don't have to go out to the class repeatedly
     # and make it mostly local to the class
@@ -96,11 +98,11 @@ class pyDecorator(object):
     LINE_STR = ""
 
     if VERBOSITY >= 1:
-      LINE_STR = ">>--------------------------------------------------\n" 
+      LINE_STR = ">>--------------------------------------------------\n"
 
     if DEBUG:
-      print ( "\n\n>>pyDecorator:pyDecorator.recursionCall count is %i" %
-        pyDecorator.recursionCall )
+      print ( "\n\n>>pyDecorator:pyDecorator.recursionLevel count is %i" %
+        pyDecorator.recursionLevel )
 
     if VERBOSITY >= 1:
       print( ">>We are calling %s" % self.func.__name__ )
@@ -110,19 +112,19 @@ class pyDecorator(object):
       pprint( kwargs )
 
     print( "\n>>Starting call to %s [Call#%03i]\n%s" %
-      (self.func.__name__, pyDecorator.callID, LINE_STR) )
+      (self.func.__name__, pyDecorator.callCount, LINE_STR) )
 
     # Remember to capture and return the args of the function called
     ret = self.func(*args, **kwargs)
 
     print( "%s>>Ended call to %s [Call#%03i]. Returned %s" %
-      (LINE_STR, self.func.__name__, pyDecorator.callID, str(ret) ))
+      (LINE_STR, self.func.__name__, pyDecorator.callCount, str(ret) ))
 
-    pyDecorator.recursionCall -= 1
+    pyDecorator.recursionLevel -= 1
 
     if DEBUG:
-      print ( "\n\npyDecorator:pyDecorator.recursionCall count is %i" %
-        pyDecorator.recursionCall )
+      print ( "\n\npyDecorator:pyDecorator.recursionLevel count is %i" %
+        pyDecorator.recursionLevel )
 
     return ret
 
@@ -160,7 +162,7 @@ class pyDecorator(object):
 
     try:
       if _getframe:
-        # With this loop we continue to trace down the stack until we are 
+        # With this loop we continue to trace down the stack until we are
         # unable to. In that event, we create a ValueError exception and
         # thus exit outside the loop
 
@@ -173,7 +175,7 @@ class pyDecorator(object):
 
     except ValueError:
       pass
-    
+
     if pyDecorator.DEBUG:
       print( "\n\npyDecorator:printCurStack finished" )
 
@@ -219,10 +221,10 @@ class pyDecorator(object):
     r"""
     Runs and prints the frameIndexth on the stack. This function CAN throw a
     ValueError when we go down to far. This function does NOT handle the
-    exception so catch it as needed. The reason is if we call this function 
+    exception so catch it as needed. The reason is if we call this function
     many times, then it doesn't have to handle it each time.
 
-    This function relies on the static variable VERBOSITY to tell it what 
+    This function relies on the static variable VERBOSITY to tell it what
     to print out.
 
     Arguments:
@@ -267,7 +269,7 @@ class pyDecorator(object):
   @staticmethod
   def printBuiltins():
     r"""
-    Prints the current builtins seen from the source code. Note, this is the 
+    Prints the current builtins seen from the source code. Note, this is the
     same regardless of what frame we are on.
     """
 
@@ -314,7 +316,7 @@ if __name__ == '__main__':
   print( "Executing sample code" )
 
   # We can change the internal variables since all variables are "public"
-  # So the verbosity can be changed on the fly 
+  # So the verbosity can be changed on the fly
   pyDecorator.VERBOSITY = 0
   pyDecorator.DEBUG = True
 

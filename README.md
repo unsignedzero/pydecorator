@@ -12,7 +12,10 @@ Created by unsignedzero and started on 05-27-2013 as an idea.
 
 # Version/Changelog #
 
-# 0.7.1.0 04-24-2013 #
+* Added .gitignore file
+* Removed extra spaces at end of line and updated comments
+
+# 0.7.1.0 06-24-2013 #
 * Added small test for return value of helloArgs
 * Added more comments in code
 * Set default verbosity to 0
@@ -24,7 +27,7 @@ Created by unsignedzero and started on 05-27-2013 as an idea.
 * Removed printing of globals and builtins in the frame since they are the
   same across all frames. Changed to static functions that people can access.
 * Change all names of functions so they are all pyDecorator and not pyDecorate,
-  VERBOSE is now VERBOSITY, added more whitespace between methods to make it 
+  VERBOSE is now VERBOSITY, added more whitespace between methods to make it
 
 # 0.6.0.0 05-27-2013 #
 * Additional comments added to code and this README.md is created
