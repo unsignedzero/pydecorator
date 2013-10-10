@@ -1,4 +1,4 @@
-# pyDecorator #  [![Build status:Can't load apt.travis-ci.org](https://api.travis-ci.org/unsignedzero/pydecorator.png)](https://travis-ci.org/unsignedzero/pydecorator)
+# pyDecorator [![Build status:Can't load apt.travis-ci.org](https://api.travis-ci.org/unsignedzero/pydecorator.png)](https://travis-ci.org/unsignedzero/pydecorator)
 
 This is a simple python decorator library that attaches onto functions and
 adds additional debugging functionality to the function in question. This
@@ -18,6 +18,8 @@ Created by unsignedzero and started on 05-27-2013 as an idea.
 
 * * * *
 
+# 0.8.1.0 10-10-2013 #
+* Bugfix with regex used on pyDecorator.
 * Removed comment in travis file about running the test using setup.py
 
 # 0.8.0.0 10-10-2013 #
@@ -52,4 +54,4 @@ Created by unsignedzero and started on 05-27-2013 as an idea.
 * Additional comments added to code and this README.md is created
 
 # 0.5.0.0 05-27-2013 #
-et Basic idea formed and concept created.
+* Basic idea formed and concept created.

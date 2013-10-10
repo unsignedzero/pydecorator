@@ -1,5 +1,7 @@
 #!/usr/bin/python
 # coding: utf-8
+#
+# pyline: disable=W0622
 
 r'''
 Python pyDecorator class
@@ -126,6 +128,7 @@ class pyDecorator(object):
     return pyDecorator._VERBOSITY
 
 
+  @staticmethod
   def setLOG(val):
     r'''
     Setter for _LOG static variable.
@@ -237,7 +240,7 @@ class pyDecorator(object):
     pyDecorator._recursionLevel -= 1
 
     if _DEBUG:
-      pyDecorator.__print ( 
+      pyDecorator.__print (
         '\n\npyDecorator:pyDecorator._recursionLevel count is %i' %
         pyDecorator._recursionLevel )
 
@@ -254,9 +257,9 @@ class pyDecorator(object):
     self.count += 1
 
     if pyDecorator._DEBUG:
-      pyDecorator.__print( 
+      pyDecorator.__print(
         '>>pyDecorator:Call count to decorator %i' % self.count )
-      pyDecorator.pyDecorator.__printCurStack()
+      pyDecorator.__printCurStack()
 
 
   @staticmethod
@@ -331,7 +334,7 @@ class pyDecorator(object):
       pyDecorator.__print(
         '>>pyDecorator:pause called. Printing current Frame...\n' )
 
-    pyDecorator.pyDecorator.__printCurFrame(2)
+    pyDecorator.__printCurFrame(2)
 
     if _DEBUG:
       pyDecorator.__print( '\n\n>>pyDecorator:pause closing...')
