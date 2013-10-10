@@ -7,6 +7,4 @@ python:
   - "3.2"
   - "3.3"
 
-script:
-py.test -q tests
-#python setup.py test
+script: py.test -q tests

@@ -18,6 +18,8 @@ Created by unsignedzero and started on 05-27-2013 as an idea.
 
 * * * *
 
+* Removed comment in travis file about running the test using setup.py
+
 # 0.8.0.0 10-10-2013 #
 * Converted header docs into docstrings
 * Public Release.
