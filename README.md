@@ -18,6 +18,15 @@ Created by unsignedzero and started on 05-27-2013 as an idea.
 
 * * * *
 
+# 0.8.2.0 10-15-2013 #
+* New warning added to class comments.
+* Constants, setters and getters are now in CamelCase for ease of typing.
+* Hook points noted for further API expansion
+* Bugfix with printCurStack
+* Reordered methods so it is easier to read
+* Method print function added.
+* Print functions can now be set to not print to logs
+
 # 0.8.1.0 10-10-2013 #
 * Bugfix with regex used on pyDecorator.
 * Removed comment in travis file about running the test using setup.py
