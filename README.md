@@ -8,6 +8,8 @@ as names and related.
 
 Created by unsignedzero and started on 05-27-2013 as an idea.
 
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/unsignedzero/pydecorator/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
 ## TO DO #
 ### Test Suite #
 * Create more/new tests
@@ -17,6 +19,8 @@ Created by unsignedzero and started on 05-27-2013 as an idea.
 # Version/Changelog #
 
 * * * *
+
+* Added bitdeli badge.
 
 # 0.8.2.0 10-15-2013 #
 * New warning added to class comments.
