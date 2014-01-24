@@ -1,10 +1,10 @@
 # pyDecorator [![Build status:Can't load apt.travis-ci.org](https://api.travis-ci.org/unsignedzero/pydecorator.png)](https://travis-ci.org/unsignedzero/pydecorator)
 
 This is a simple python decorator library that attaches onto functions and
-adds additional debugging functionality to the function in question. This
+adds additional debugging capabilities. This
 decorator can print out the current stack as well as local/global
 methods/variables that are local to each function on the stack as well
-as names and related.
+as names and related information.
 
 Created by unsignedzero and started on 05-27-2013 as an idea.
 
@@ -20,6 +20,7 @@ Created by unsignedzero and started on 05-27-2013 as an idea.
 
 * * * *
 
+* Cleaning up README.md.
 * Added bitdeli badge.
 
 # 0.8.2.0 10-15-2013 #
